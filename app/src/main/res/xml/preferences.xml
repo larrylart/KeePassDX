@@ -45,6 +45,13 @@
 			android:icon="@drawable/prefs_color_lens_24dp"
 			android:summary="@string/menu_appearance_settings_summary"
 			android:persistent="false" />
+		<!-- larry added -->
+		<Preference
+			android:key="settings_output_provider_key"
+			android:title="Output Credentials Providers"
+			android:icon="@android:drawable/ic_menu_share"
+			android:summary="Keyboard, External devices"
+			android:persistent="false" />			
 	</PreferenceCategory>
 
 	<PreferenceCategory

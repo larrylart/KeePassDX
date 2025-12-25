@@ -32,11 +32,19 @@ android {
     buildTypes {
         release {
             minifyEnabled = false
+            signingConfig signingConfigs.debug
         }
     }
 
     buildFeatures {
         buildConfig true
+		aidl true
+    }
+
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/aidl']
+        }
     }
 
     dependenciesInfo {

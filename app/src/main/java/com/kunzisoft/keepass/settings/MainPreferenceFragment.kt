@@ -107,6 +107,15 @@ class MainPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
+		// larry's add
+		findPreference<Preference>(getString(R.string.settings_output_provider_key))?.apply {
+			onPreferenceClickListener = Preference.OnPreferenceClickListener {
+				mCallback?.onNestedPreferenceSelected(NestedSettingsFragment.Screen.OUTPUT_PROVIDER)
+				false
+			}
+		}
+		// larry's add end
+
         findPreference<Preference>(getString(R.string.settings_database_key))?.apply {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 mCallback?.onNestedPreferenceSelected(NestedSettingsFragment.Screen.DATABASE)

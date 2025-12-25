@@ -18,6 +18,8 @@ import com.kunzisoft.keepass.model.PasskeyEntryFields.PASSKEY_FIELD
 import com.kunzisoft.keepass.otp.OtpElement
 import com.kunzisoft.keepass.otp.OtpEntryFields.OTP_TOKEN_FIELD
 
+// larry added
+import com.kunzisoft.keepass.settings.PreferencesUtil
 
 class TemplateView @JvmOverloads constructor(context: Context,
                                                  attrs: AttributeSet? = null,
@@ -43,6 +45,13 @@ class TemplateView @JvmOverloads constructor(context: Context,
     fun setAllowCopyProtectedFields(allowCopyProtectedFields : Boolean) {
         this.mAllowCopyProtectedFields = allowCopyProtectedFields
     }
+
+	// larry adds
+	private var mOnSendActionClickListener: ((Field) -> Unit)? = null
+	fun setOnSendActionClickListener(listener: ((Field) -> Unit)? = null) {
+		mOnSendActionClickListener = listener
+	}
+	// end
 
     override fun preProcessTemplate() {
         headerContainerView.isVisible = false
@@ -92,9 +101,37 @@ class TemplateView @JvmOverloads constructor(context: Context,
                             ?.invoke(Field(label, ProtectedString(false, value)))
                     }
                 }
+				
+				// Larry's addon
+				val isPassword = TemplateField.isStandardPasswordName(context, field.name)
+
+				if (isPassword) {
+					val enabled = PreferencesUtil.isOutputProviderEnabled(context)
+					val provider = PreferencesUtil.getOutputProviderComponent(context).orEmpty()
+					val show = enabled && provider.isNotBlank()
+					setSendButtonVisible(show)
+					setOnSendClickListener { label, value ->
+						mOnSendActionClickListener?.invoke(
+							Field(label, ProtectedString(field.protectedValue.isProtected, value))
+						)
+					}
+				} else {
+					setSendButtonVisible(false)
+					setOnSendClickListener(null)
+				}
+				// end of Larry's addon
+				
             }
         }
     }
+
+	// Larry - Call this to toggle the password field's send button enabled/disabled
+	fun setSendInProgress(inProgress: Boolean) {
+		// The password view is tagged with FIELD_PASSWORD_TAG by the template builder
+		val passView: TextFieldView? = findViewWithTag(FIELD_PASSWORD_TAG)
+		passView?.setSendButtonEnabled(!inProgress)
+	}
+	// end
 
     override fun buildListItemsView(
         templateAttribute: TemplateAttribute,

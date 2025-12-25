@@ -28,8 +28,12 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.CREATE_DOCUMENT" />
-            <data android:mimeType="application/octet-stream" />
+            <data android:mimeType="application/octet-stream" />			
         </intent>
+		<!-- larry add for output providers -->		
+		<intent>
+			<action android:name="org.keepassdx.intent.action.OUTPUT_CREDENTIALS_SERVICE" />
+		</intent>
     </queries>
 
     <application
@@ -177,6 +181,14 @@
             tools:targetApi="34" />
         <activity
             android:name="com.kunzisoft.keepass.settings.AppearanceSettingsActivity" />
+			
+		<!-- larry output provider settings -->
+        <activity
+            android:name=".settings.OutputProviderSettingsActivity"
+            android:exported="false"
+            android:label="@string/title_output_provider" />
+		<!-- larry output provider settings end -->
+		
         <activity
             android:name="com.kunzisoft.keepass.credentialprovider.activity.HardwareKeyActivity"
             android:theme="@style/Theme.Transparent"

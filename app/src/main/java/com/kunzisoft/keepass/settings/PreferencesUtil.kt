@@ -26,6 +26,7 @@ import android.content.res.Resources
 import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
+import android.content.ComponentName	// larry's add 
 import com.kunzisoft.keepass.BuildConfig
 import com.kunzisoft.keepass.R
 import com.kunzisoft.keepass.activities.stylish.Stylish
@@ -914,4 +915,73 @@ object PreferencesUtil {
             Education.putPropertiesInEducationPreferences(context, editor, name, value)
         }
     }
+	
+	// :: Larry's add start - cont might need moving to relevant location
+	// *** Output Provider (External credential output) ***
+	private const val PREF_OUTPUT_PROVIDER_ENABLED = "pref_output_provider_enabled"
+	private const val PREF_OUTPUT_PROVIDER_COMPONENT = "pref_output_provider_component"   // ComponentName
+	private const val PREF_OUTPUT_PROVIDER_VERIFY = "pref_output_provider_verify"      // Boolean	
+	// ---------- Output provider component ----------
+	fun isOutputProviderEnabled(context: Context): Boolean {
+    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+		return prefs.getBoolean(PREF_OUTPUT_PROVIDER_ENABLED, false)
+	}
+
+	fun setOutputProviderEnabled(context: Context, enabled: Boolean) {
+		PreferenceManager.getDefaultSharedPreferences(context)
+			.edit()
+			.putBoolean(PREF_OUTPUT_PROVIDER_ENABLED, enabled)
+			.apply()
+
+		// Optional: when disabled, also clear selected provider to avoid accidental sends
+		if (!enabled) {
+			setOutputProviderComponent(context, "")
+		}
+	}
+	
+	fun setOutputProviderComponent(context: Context, component: String) {
+		PreferenceManager.getDefaultSharedPreferences(context)
+			.edit()
+			.putString(PREF_OUTPUT_PROVIDER_COMPONENT, component)
+			.apply()
+	}
+
+	fun getOutputProviderComponent(context: Context): String? {
+		return PreferenceManager.getDefaultSharedPreferences(context)
+			.getString(PREF_OUTPUT_PROVIDER_COMPONENT, null)
+			?.takeIf { it.isNotBlank() }
+	}
+
+	fun clearOutputProviderComponent(context: Context) {
+		PreferenceManager.getDefaultSharedPreferences(context)
+			.edit()
+			.remove(PREF_OUTPUT_PROVIDER_COMPONENT)
+			.apply()
+	}
+
+	fun getOutputProviderComponentName(context: Context): ComponentName? {
+		val flat = getOutputProviderComponent(context) ?: return null
+		return try {
+			ComponentName.unflattenFromString(flat)
+		} catch (_: Exception) {
+			null
+		}
+	}
+
+	// ---------- Output provider verification ----------
+	fun setOutputProviderVerify(context: Context, verify: Boolean) {
+		PreferenceManager.getDefaultSharedPreferences(context)
+			.edit()
+			.putBoolean(PREF_OUTPUT_PROVIDER_VERIFY, verify)
+			.apply()
+	}
+
+	fun isOutputProviderVerifyEnabled(context: Context): Boolean {
+		// not secure-by-default - until we have a curated list/certs 
+		return PreferenceManager.getDefaultSharedPreferences(context)
+			.getBoolean(PREF_OUTPUT_PROVIDER_VERIFY, false)
+	}
+
+	// :: Larry's add end
+	
 }

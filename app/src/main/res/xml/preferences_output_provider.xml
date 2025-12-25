@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/title_output_provider" />
+
+    <!-- typing providers per discovery -->
+	<com.kunzisoft.keepass.settings.preference.OutputProviderRowPreference
+		android:key="pref_output_provider_component"
+		app:layout="@layout/pref_output_provider_row" />		
+		
+	<!-- Enforce Verification -->
+	<com.kunzisoft.keepass.settings.preference.LabeledSwitchPreference
+		android:key="pref_output_provider_verify"
+		android:title="@string/label_output_provider_verification"
+		android:defaultValue="false" />
+		
+</PreferenceScreen>

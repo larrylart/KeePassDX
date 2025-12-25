@@ -49,6 +49,19 @@ open class TextFieldView @JvmOverloads constructor(context: Context,
     private var showButtonId = ViewCompat.generateViewId()
     private var copyButtonId = ViewCompat.generateViewId()
 
+	// larry: add send button
+	private val sendButtonId = ViewCompat.generateViewId()
+	val sendButton = AppCompatImageButton(
+		ContextThemeWrapper(context, R.style.KeepassDXStyle_ImageButton_Simple), null, 0
+	).apply {
+		layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+		// larry: Using player media icon for now - perhaps should use a better icon
+		setImageResource(android.R.drawable.ic_media_next)
+		contentDescription = "Send"
+		isVisible = true    // hidden by default false - true for now for debug
+	}
+	// end of Larry's change
+
     protected val labelView = AppCompatTextView(context).apply {
         setTextAppearance(context,
             R.style.KeepassDXStyle_TextAppearance_LabelTextStyle)
@@ -116,32 +129,54 @@ open class TextFieldView @JvmOverloads constructor(context: Context,
         addView(showButton)
         addView(labelView)
         addView(valueView)
+		addView(sendButton)
     }
 
     private fun buildViews() {
-        copyButton.apply {
-            id = copyButtonId
-            layoutParams = (layoutParams as LayoutParams?)?.also {
-                it.addRule(ALIGN_PARENT_RIGHT)
-                it.addRule(ALIGN_PARENT_END)
-            }
-        }
+		
+		// Right-most: SEND
+		sendButton.apply {
+			id = sendButtonId
+			layoutParams = (layoutParams as LayoutParams?)?.also {
+				it.addRule(ALIGN_PARENT_END)
+				it.addRule(ALIGN_PARENT_RIGHT)
+			}
+		}		
+		
+		// Middle: COPY (left of SEND when SEND visible; otherwise right-most)
+		copyButton.apply {
+			id = copyButtonId
+			layoutParams = (layoutParams as LayoutParams?)?.also {
+				if (sendButton.isVisible) {
+					it.addRule(LEFT_OF, sendButtonId)
+					it.addRule(START_OF, sendButtonId)
+				} else {
+					it.addRule(ALIGN_PARENT_END)
+					it.addRule(ALIGN_PARENT_RIGHT)
+				}
+			}
+		}
+		
+		// Left-most: EYE/SHOW (left of COPY if visible; else left of SEND; else right-most)
         showButton.apply {
             id = showButtonId
             layoutParams = (layoutParams as LayoutParams?)?.also {
                 if (copyButton.isVisible) {
-                    it.addRule(LEFT_OF, copyButtonId)
-                    
+                    it.addRule(LEFT_OF, copyButtonId)                    
                     it.addRule(START_OF, copyButtonId)
-                    
+					
+                } else if( sendButton.isVisible ) {			// larry's send button
+					it.addRule(LEFT_OF, sendButtonId)
+					it.addRule(START_OF, sendButtonId)
+						
                 } else {
-                    it.addRule(ALIGN_PARENT_RIGHT)
-                    
+                    it.addRule(ALIGN_PARENT_RIGHT)                    
                     it.addRule(ALIGN_PARENT_END)
                     
                 }
             }
         }
+		
         labelView.apply {
             id = labelViewId
             layoutParams = (layoutParams as LayoutParams?)?.also {
@@ -310,6 +345,24 @@ open class TextFieldView @JvmOverloads constructor(context: Context,
             isVisible = value
         }
 
+	// larry: add API to control/show the button
+	fun setSendButtonVisible(visible: Boolean) {
+		sendButton.isVisible = visible
+		invalidate()
+	}
+
+	// Enable/disable the send button (and dim it when disabled)
+	fun setSendButtonEnabled(enabled: Boolean) {
+		sendButton.isEnabled = enabled
+		sendButton.alpha = if (enabled) 1f else 0.5f
+	}
+
+	fun setOnSendClickListener(onClick: ((label: String, value: String) -> Unit)?) {
+		val listener = if (onClick != null) OnClickListener { onClick.invoke(label, value) } else null
+		sendButton.setOnClickListener(listener)
+	}
+	// end of larry's adds
+	
     override fun invalidate() {
         super.invalidate()
         buildViews()

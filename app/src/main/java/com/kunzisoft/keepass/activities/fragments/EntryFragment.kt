@@ -30,6 +30,12 @@ import com.kunzisoft.keepass.view.hideByFading
 import com.kunzisoft.keepass.view.showByFading
 import com.kunzisoft.keepass.viewmodels.EntryViewModel
 
+// larry's add
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
+import com.kunzisoft.keepass.output.OutputProviderClient
+
 class EntryFragment: DatabaseFragment() {
 
     private lateinit var rootView: View
@@ -54,6 +60,9 @@ class EntryFragment: DatabaseFragment() {
 
     private val mEntryViewModel: EntryViewModel by activityViewModels()
 
+	// larry
+	private var outputClient: OutputProviderClient? = null
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -61,7 +70,26 @@ class EntryFragment: DatabaseFragment() {
 
         return inflater.inflate(R.layout.fragment_entry, container, false)
     }
-    
+		
+	// larry add
+	override fun onStart() {
+		super.onStart()
+		val ctx = context ?: return
+		if (!PreferencesUtil.isOutputProviderEnabled(ctx)) return
+
+		// no manual binding needed - client binds on-demand when sending
+		if (outputClient == null) {
+			outputClient = OutputProviderClient(ctx.applicationContext)
+		}
+	}
+
+	// larry add
+	override fun onStop() {
+		super.onStop()
+		outputClient?.release()
+		outputClient = null
+	}		
+	
     override fun onViewCreated(view: View,
                                savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -163,6 +191,55 @@ class EntryFragment: DatabaseFragment() {
                     field.protectedValue.isProtected
                 )
             }
+			
+			// larry add: Send button handler (wired from TemplateView -> TextFieldView.sendButton)
+			setOnSendActionClickListener { field ->
+				val ctx = requireContext()
+
+				if (!PreferencesUtil.isOutputProviderEnabled(ctx)) {
+					Toast.makeText(ctx, "Output provider is disabled", Toast.LENGTH_SHORT).show()
+					return@setOnSendActionClickListener
+				}
+
+				if (PreferencesUtil.getOutputProviderComponentName(ctx) == null) {
+					Toast.makeText(ctx, "Select an output provider first", Toast.LENGTH_SHORT).show()
+					return@setOnSendActionClickListener
+				}
+
+				val client = outputClient ?: OutputProviderClient(ctx.applicationContext).also {
+					outputClient = it
+				}
+
+				templateView.setSendInProgress(true)
+
+				// Optional: timeout UI fallback
+				val ui = Handler(Looper.getMainLooper())
+				val fallback = Runnable {
+					templateView.setSendInProgress(false)
+					Toast.makeText(ctx, "Send failed: not responding", Toast.LENGTH_SHORT).show()
+				}
+				ui.postDelayed(fallback, 8_000)
+
+				val mode = "pass"
+				val entryTitle = entryInfo?.title
+				val entryUuid = entryInfo?.id?.asHexString()
+
+				client.sendWithResult(
+					mode = mode,
+					username = null,
+					password = field.protectedValue.stringValue,
+					otp = null,
+					entryTitle = entryTitle,
+					entryUuid = entryUuid
+				) { rc: Int ->
+					ui.removeCallbacks(fallback)
+					templateView.setSendInProgress(false)
+
+					val msg = if (rc == 0) "Sent OK" else "Send failed (code=$rc)"
+					Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
+				}
+			}
+			// larry end			
         }
 
         // Populate entry views

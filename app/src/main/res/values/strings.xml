@@ -775,4 +775,16 @@
     <string name="passkey_backup_eligibility">Passkey Backup Eligibility</string>
     <string name="passkey_backup_state">Passkey Backup State</string>
     <string name="error_passkey_result">Unable to return the passkey</string>
+	
+	<!-- larry add start output device strings -->
+	<string name="menu_output_provider_settings">Output Provider</string>
+	<string name="title_output_provider">Credentials Output Provider</string>	
+	<string name="label_select_output_provider">Select Output Provider</string>
+	<string name="label_output_provider_verification">Enforce Verification</string>	
+	<string name="settings_output_provider_key">settings_output_provider_key</string>
+	<string name="output_provider_verification_key">pref_output_provider_verify</string>
+	<string name="no_output_provider_found">No Output Provider Found</string>
+	
+	<!-- larry add end -->
+	
 </resources>
