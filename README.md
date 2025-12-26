@@ -5,6 +5,37 @@
 
 ---
 
+## How to Test (Experimental)
+
+To test this experimental AIDL-based HID integration, install the following components:
+
+### Required APKs / Firmware
+
+- **KeePassDX-FORK_v2.0.0.apk**  
+  Modified KeePassDX build that implements AIDL-based HID discovery and credential sending.
+
+- **KP2APlugin_KeepassDX.apk**  
+  Modified InputStick KP2A plugin that exposes an AIDL interface and accepts credentials from KeePassDX.
+
+- **BluKeyborg_v1.0.2.apk** or newer. 
+  Blue Keyboard companion app acting as a hardware proxy for the dongle.
+
+- **bluekb_firmware_v2.0.0.bin** or newer. 
+  Firmware to be flashed onto a **LilyGO T-Dongle S3 (with LCD)**.
+
+### InputStick-only Testing
+
+If you are testing **only with InputStick**, you need **only**:
+
+- **KeePassDX-FORK_v2.0.0.apk**
+- **KP2APlugin_KeepassDX.apk**
+
+No Blue Keyboard firmware or BluKeyborg app is required in that case.
+
+⚠️ This is **experimental** and intended for testing and feedback only.
+
+---
+
 ## Experimental HID (AIDL-based) Integration
 
 This fork explores an alternative and **lower-impact integration model** for external HID devices compared to earlier work.
