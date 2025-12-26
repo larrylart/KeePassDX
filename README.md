@@ -1,3 +1,135 @@
+> ⚠️ **EXPERIMENTAL AIDL / HID INTEGRATION FOR KEEPASSDX**
+>
+> This repository is a **modified fork of KeePassDX** created to experiment with **hardware HID device integration**
+> (for example **Blue Keyboard**, **InputStick**, and similar dongles) directly from KeePassDX.
+
+---
+
+## How to Test (Experimental)
+
+To test this experimental AIDL-based HID integration, install the following components:
+
+### Required APKs / Firmware
+
+- **KeePassDX-FORK_v2.0.0.apk**  
+  Modified KeePassDX build that implements AIDL-based HID discovery and credential sending.
+
+- **KP2APlugin_KeepassDX.apk**  
+  Modified InputStick KP2A plugin that exposes an AIDL interface and accepts credentials from KeePassDX.
+
+- **BluKeyborg_v1.0.2.apk** or newer. 
+  Blue Keyboard companion app acting as a hardware proxy for the dongle.
+
+- **bluekb_firmware_v2.0.0.bin** or newer. 
+  Firmware to be flashed onto a **LilyGO T-Dongle S3 (with LCD)**.
+
+### InputStick-only Testing
+
+If you are testing **only with InputStick**, you need **only**:
+
+- **KeePassDX-FORK_v2.0.0.apk**
+- **KP2APlugin_KeepassDX.apk**
+
+No Blue Keyboard firmware or BluKeyborg app is required in that case.
+
+⚠️ This is **experimental** and intended for testing and feedback only.
+
+---
+
+## Experimental HID (AIDL-based) Integration
+
+This fork explores an alternative and **lower-impact integration model** for external HID devices compared to earlier work.
+
+### What is different from previous forks?
+
+- This fork is **not** a full in-tree integration of a specific device.
+- Instead, KeePassDX discovers and communicates with **external HID providers** using a **generic Android AIDL interface**.
+- Each hardware vendor (or companion app) exposes its own AIDL service and keeps all device-specific logic in its **native app or plugin**.
+
+This significantly reduces KeePassDX’s integration surface area and avoids tightly coupling the project to any single hardware implementation.
+
+#### Previous approach 
+A prior experimental clone ([KeePassDX-kb](https://github.com/larrylart/KeePassDX-kb)) fully embedded **Blue Keyboard** logic directly inside KeePassDX.  
+While functional, that approach has a large surface/maintenance and security footprint.
+
+#### Current approach (this fork)
+- KeePassDX → discovers HID providers via **AIDL**
+- KeePassDX → sends credentials via AIDL
+- HID provider app/plugin → talks to the hardware using its own native API
+
+Examples of HID providers:
+- **BluKeyborg app** (Blue Keyboard companion)
+- **InputStick plugin**
+- Other future HID integrations implementing the same AIDL contract
+
+---
+
+## Current State & UX Limitations
+
+⚠️ **Highly experimental**
+
+- The user experience is currently **very basic**.
+- Credential sending is limited to a **hard-wired button** placed beside the password field.
+- There is no field-aware interaction yet (tap-to-send, gestures, etc.).
+
+### Potential UX improvements (future work)
+
+If KeePassDX maintainers are open to this approach, the UX could be improved significantly, for example:
+
+- Tap directly on **username / password fields** to send them to the HID device
+- Add **top-right menu actions**, such as:
+  - `username`
+  - `password`
+  - `username <TAB> password <ENTER>`
+  - Custom field combinations
+
+The current implementation is intentionally minimal to validate the technical feasibility first.
+
+---
+
+## KP2A Plugin AIDL Experiment
+
+As part of this experiment, the **KP2A plugin** was also modified to implement the same AIDL interface so it can be discovered by KeePassDX:
+
+- KeePassDX successfully discovers the plugin
+- KeePassDX successfully sends credentials to the plugin via AIDL
+
+⚠️ **Important limitation**
+
+I do **not** own an InputStick device, so I cannot confirm that:
+- credentials are actually sent from the plugin to the HID device
+- the full chain works end-to-end on real hardware
+
+Testing so far confirms only that:
+> KeePassDX → AIDL → plugin **receives** the credentials
+
+If you own an InputStick and are willing to test this end-to-end, please report whether it works (or does not).
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="EXPERIMENT_AIDL_DOC/keepassdx_aidl_settings_output.jpg" width="30%" />
+  <img src="EXPERIMENT_AIDL_DOC/keepassdx_aidl_select_output.jpg" width="30%" />
+  <img src="EXPERIMENT_AIDL_DOC/keepassdx_aidl_send_button.jpg" width="30%" />
+</p>
+
+---
+
+## Implementation Notes
+
+A detailed list of files modified for this experiment, along with their purpose, is available here:
+
+- **Modified files & rationale:**  
+  `EXPERIMENT_AIDL_DOC/files_changes.txt`
+
+This fork should be considered a **proof-of-concept** rather than a production-ready feature.
+Feedback, testing reports, and discussion are welcome.
+
+---
+---
+
 # Android KeePassDX
 
 <img alt="KeePassDX Icon" src="https://raw.githubusercontent.com/Kunzisoft/KeePassDX/master/art/icon.png"> **Lightweight password safe and manager for Android**, KeePassDX allows editing encrypted data in a single file in KeePass format and fill in the forms in a secure way.
