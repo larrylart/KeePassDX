@@ -119,10 +119,7 @@ If you own an InputStick and are willing to test this end-to-end, please report 
 
 ## Implementation Notes
 
-A detailed list of files modified for this experiment, along with their purpose, is available here:
-
-- **Modified files & rationale:**  
-  `EXPERIMENT_AIDL_DOC/files_changes.txt`
+A list of files added/modified for this experiment, along with their purpose, is available here: [Modified files & purpose](EXPERIMENT_AIDL_DOC/files_changes.txt)
 
 This fork should be considered a **proof-of-concept** rather than a production-ready feature.
 Feedback, testing reports, and discussion are welcome.
