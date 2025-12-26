@@ -1,0 +1,28 @@
+Quick map of files added modified in this experiment.
+
+NEW:	KeePassDX\app\src\main\aidl\org\keepassdx\output\IOutputCredentialsService.aidl - AIDL interface
+NEW:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\OutputProviderPreferenceFragment.kt - settings->output providers handler, AIDL discovery
+NEW:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\output\OutputProviderClient.kt - AIDL client implementation
+
+UPDATE: KeePassDX\app\src\main\java\com\kunzisoft\keepass\activities\fragments\EntryFragment.kt - the password button send call via AIDL
+
+UPDATE:	KeePassDX\app\src\main\res\xml\preferences.xml - main settings integration
+NEW:	KeePassDX\app\src\main\res\xml\preferences_output_provider.xml - settings->output
+UPDATE:	KeePassDX\app\src\main\res\values\strings.xml - strings needs around
+
+NEW:	KeePassDX\app\src\main\res\layout\pref_labeled_switch_row.xml - switch with label layout
+NEW:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\preference\LabeledSwitchPreference.kt - generic switch with label layout
+
+UPDATE:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\PreferencesUtil.kt - addin to get/set output providers prefs - const might need moving to suitable place
+NEW:	KeePassDX\app\src\main\res\layout\pref_output_provider_row.xml - layout for provider dropdown and toggle switch - might need to reuse an existing one?
+
+NEW:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\OutputProviderSettingsActivity.kt - output settings activity
+
+UPDATE: KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\NestedSettingsFragment.kt - add OUTPUT_PROVIDER
+UPDATE: KeePassDX\app\src\main\java\com\kunzisoft\keepass\settings\MainPreferenceFragment.kt 
+
+UPDATE:	KeePassDX\app\src\main\java\com\kunzisoft\keepass\view\TextFieldView.kt - adds send pass button
+UPDATE: KeePassDX\app\src\main\java\com\kunzisoft\keepass\view\TemplateView.kt - layout for the send button
+
+UPDATE:	KeePassDX\app\src\main\AndroidManifest.xml - add output settings activity, aidl 
+UPDATE: KeePassDX\app\build.gradle - add aidl
